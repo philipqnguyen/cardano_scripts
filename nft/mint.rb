@@ -60,7 +60,7 @@ before_slot = JSON.parse(File.read(options[:policy]))['scripts'].find {|hash| ha
 utxos_table = `cardano-cli query utxo --address #{options[:address]} --#{network} --#{options[:era]}`
 
 sum_address_command = File.expand_path('../balances/sum_address.rb', File.dirname(__FILE__))
-totals = JSON.parse(`#{sum_address_command} -a #{options[:address]} -n #{network} -e #{options[:era]}`)
+totals = JSON.parse(`#{sum_address_command} -a #{options[:address]} -n #{options[:network]} -e #{options[:era]}`)
 total_lovelace_out = 0
 tmp_file = "transaction_#{Time.now.to_i}"
 
