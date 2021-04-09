@@ -97,6 +97,7 @@ cardano-cli transaction build-raw \
   --fee 0 \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
+  #{return_tx_out} \
   --mint=#{options[:tokens].join('+')} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
@@ -108,7 +109,7 @@ calculate_min_fee_command = """
 cardano-cli transaction calculate-min-fee \
   --tx-body-file #{tmp_file}.raw \
   --tx-in-count #{txs_in.count} \
-  --tx-out-count #{txs_out.count} \
+  --tx-out-count #{txs_out.count + 1} \
   --witness-count 2 \
   --#{network} \
   --protocol-params-file #{options[:protocol_file]}
@@ -123,6 +124,7 @@ cardano-cli transaction build-raw \
   --fee #{fee} \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
+  #{return_tx_out} \
   --mint=#{options[:tokens].join('+')} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
