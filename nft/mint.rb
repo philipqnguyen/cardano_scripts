@@ -85,10 +85,14 @@ end.compact
 
 new_totals = totals
 new_totals['lovelace'] -= total_lovelace_out
-prior_tokens = new_totals.map do |token, amount|
+prior_tokens = new_totals.except('lovelace').map do |token, amount|
   "+\"#{amount} #{token}\""
 end
 return_tx_out = "--tx-out #{options[:return_address]} #{new_totals['lovelace']}" + prior_tokens.join('')
+
+mint_args = options[:tokens].map do |token|
+  "\"1 #{token}\""
+end.join('+')
 
 build_raw_transaction_command = """
 cardano-cli transaction build-raw \
@@ -98,7 +102,7 @@ cardano-cli transaction build-raw \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
   #{return_tx_out} \
-  --mint=#{options[:tokens].join('+')} \
+  --mint=#{mint_args} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
 """
@@ -125,7 +129,7 @@ cardano-cli transaction build-raw \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
   #{return_tx_out} \
-  --mint=#{options[:tokens].join('+')} \
+  --mint=#{mint_args} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
 """
