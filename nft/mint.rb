@@ -60,8 +60,8 @@ before_slot = JSON.parse(File.read(options[:policy]))['scripts'].find {|hash| ha
 utxos_table = `cardano-cli query utxo --address #{options[:address]} --#{network} --#{options[:era]}`
 
 sum_address_command = File.expand_path('../balances/sum_address.rb', File.dirname(__FILE__))
-totals = JSON.parse(`#{sum_address_command} -a #{options[:address]} -n #{options[:network]} -e #{options[:era]}`)
-total_lovelace_out = 0
+@totals = JSON.parse(`#{sum_address_command} -a #{options[:address]} -n #{options[:network]} -e #{options[:era]}`)
+@total_lovelace_out = 0
 tmp_file = "transaction_#{Time.now.to_i}"
 
 utxos = utxos_table.split(/\n/)[2..-1]
@@ -79,18 +79,18 @@ end.compact
 
 txs_out = options[:destination_addresses].map.with_index do |address, index|
   amount = 1500000
-  total_lovelace_out += amount
+  @total_lovelace_out += amount
   "--tx-out #{address}+#{amount}+\"1 #{options[:tokens][index]}\""
 end.compact
 
 def return_tx_out(fee: 0, options: {})
-  new_totals = totals
-  new_totals['lovelace'] -= total_lovelace_out
+  new_totals = @totals
+  new_totals['lovelace'] -= @total_lovelace_out
   prior_tokens = new_totals.map do |token, amount|
     "+\"#{amount} #{token}\""
   end
   prior_tokens.delete_if {|token| token.include? 'lovelace'}
-  "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fees}" + prior_tokens.join('')
+  "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fee}" + prior_tokens.join('')
 end
 
 mint_args = options[:tokens].map do |token|
