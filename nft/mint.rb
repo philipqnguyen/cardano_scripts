@@ -10,22 +10,25 @@ OptionParser.new do |parser|
     options[:address] = address
   end
   parser.on("-d", "--destination-address ADDRESS", Array, "Address(es) to deliver") do |destination_address|
-    options[:destination_addresses] << destination_address
+    options[:destination_addresses] += destination_address
   end
   parser.on("-r", "--return-address ADDRESS", "Return Address to deliver remaining ADA and assets") do |return_address|
     options[:return_address] = return_address
   end
   parser.on("-t", "--token TOKEN", Array, "Token(s) to deliver") do |token|
-    options[:tokens] << token
+    options[:tokens] += token
+  end
+  parser.on("--metadata METADATA_FILE", "Metadata file") do |metadata|
+    options[:metadata] += metadata
   end
   parser.on("--policy POLICY_FILE", "Policy file to parse") do |policy|
-    options[:policy] << policy
+    options[:policy] += policy
   end
   parser.on("--policy-signing-key POLICY_SIGNING_KEY", "Signing key for policy") do |policy_skey|
-    options[:policy_skey] << policy_skey
+    options[:policy_skey] += policy_skey
   end
   parser.on("--payment-signing-key PAYMENT_SIGNING_KEY", "Signing key for payment address") do |payment_skey|
-    options[:payment_skey] << payment_skey
+    options[:payment_skey] += payment_skey
   end
   parser.on("-p", "--protocol-file PROTOCOL_FILE", "Protocol JSON file") do |file|
     options[:protocol_file] = file
@@ -91,6 +94,7 @@ cardano-cli transaction build-raw \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
   --mint=#{options[:tokens].join('+')} \
+  --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
 """
 
@@ -116,6 +120,7 @@ cardano-cli transaction build-raw \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
   --mint=#{options[:tokens].join('+')} \
+  --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
 """
 
