@@ -83,7 +83,7 @@ txs_out = options[:destination_addresses].map.with_index do |address, index|
   "--tx-out #{address}+#{amount}+\"1 #{options[:tokens][index]}\""
 end.compact
 
-def return_tx_out(fee: 0, options: options)
+def return_tx_out(fee: 0, options: {})
   new_totals = totals
   new_totals['lovelace'] -= total_lovelace_out
   prior_tokens = new_totals.map do |token, amount|
