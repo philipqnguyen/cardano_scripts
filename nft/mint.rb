@@ -120,7 +120,7 @@ cardano-cli transaction calculate-min-fee \
   --protocol-params-file #{options[:protocol_file]}
 """
 
-fee = `#{calculate_min_fee_command.strip}`.strip
+fee = `#{calculate_min_fee_command.strip}`.strip.split(' ').first
 
 build_raw_transaction_with_fees_command = """
 cardano-cli transaction build-raw \
