@@ -90,7 +90,7 @@ def return_tx_out(fee: 0, options: {})
     "+\"#{amount} #{token}\""
   end
   prior_tokens.delete_if {|token| token.include? 'lovelace'}
-  "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fee}" + prior_tokens.join('')
+  "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fee.to_i}" + prior_tokens.join('')
 end
 
 mint_args = options[:tokens].map do |token|
