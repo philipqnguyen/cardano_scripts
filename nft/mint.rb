@@ -85,7 +85,7 @@ end.compact
 
 new_totals = totals
 new_totals['lovelace'] -= total_lovelace_out
-prior_tokens = new_totals.except('lovelace').map do |token, amount|
+prior_tokens = new_totals.map do |token, amount|
   "+\"#{amount} #{token}\""
 end
 prior_tokens.delete('lovelace')
