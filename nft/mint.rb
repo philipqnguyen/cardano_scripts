@@ -77,7 +77,7 @@ txs_in = utxos.map do |utxo|
   end
 end.compact
 
-txs_out = options[:destination_addresses].map_with_index do |address, index|
+txs_out = options[:destination_addresses].map.with_index do |address, index|
   amount = 1500000
   total_lovelace_out += amount
   "--tx-out #{address} #{amount}+\"1 #{options[:tokens][index]}\""
