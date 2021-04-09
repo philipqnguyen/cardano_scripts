@@ -83,14 +83,13 @@ txs_out = options[:destination_addresses].map.with_index do |address, index|
   "--tx-out #{address}+#{amount}+\"1 #{options[:tokens][index]}\""
 end.compact
 
-new_totals = totals
-new_totals['lovelace'] -= total_lovelace_out
-prior_tokens = new_totals.map do |token, amount|
-  "+\"#{amount} #{token}\""
-end
-prior_tokens.delete_if {|token| token.include? 'lovelace'}
-
-def return_tx_out(fees = 0)
+def return_tx_out(fee: 0, options: options)
+  new_totals = totals
+  new_totals['lovelace'] -= total_lovelace_out
+  prior_tokens = new_totals.map do |token, amount|
+    "+\"#{amount} #{token}\""
+  end
+  prior_tokens.delete_if {|token| token.include? 'lovelace'}
   "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fees}" + prior_tokens.join('')
 end
 
@@ -105,7 +104,7 @@ cardano-cli transaction build-raw \
   --fee 0 \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
-  #{return_tx_out} \
+  #{return_tx_out(fee: 0, options: options)} \
   --mint=#{mint_args} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
@@ -132,7 +131,7 @@ cardano-cli transaction build-raw \
   --fee #{fee} \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
-  #{return_tx_out(fee)} \
+  #{return_tx_out(fee: fee, options: options)} \
   --mint=#{mint_args} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
