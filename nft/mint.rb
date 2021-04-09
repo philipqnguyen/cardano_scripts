@@ -89,7 +89,10 @@ prior_tokens = new_totals.map do |token, amount|
   "+\"#{amount} #{token}\""
 end
 prior_tokens.delete_if {|token| token.include? 'lovelace'}
-return_tx_out = "--tx-out #{options[:return_address]}+#{new_totals['lovelace']}" + prior_tokens.join('')
+
+def return_tx_out(fees = 0)
+  "--tx-out #{options[:return_address]}+#{new_totals['lovelace'] - fees}" + prior_tokens.join('')
+end
 
 mint_args = options[:tokens].map do |token|
   "\"1 #{token}\""
@@ -129,7 +132,7 @@ cardano-cli transaction build-raw \
   --fee #{fee} \
   #{txs_in.join(' ')} \
   #{txs_out.join(' ')} \
-  #{return_tx_out} \
+  #{return_tx_out(fee)} \
   --mint=#{mint_args} \
   --metadata-json-file #{options[:metadata]} \
   --out-file #{tmp_file}.raw
