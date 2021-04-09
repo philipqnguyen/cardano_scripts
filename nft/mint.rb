@@ -80,7 +80,7 @@ end.compact
 txs_out = options[:destination_addresses].map.with_index do |address, index|
   amount = 1500000
   total_lovelace_out += amount
-  "--tx-out #{address} #{amount}+\"1 #{options[:tokens][index]}\""
+  "--tx-out #{address}+#{amount}+\"1 #{options[:tokens][index]}\""
 end.compact
 
 new_totals = totals
@@ -88,8 +88,8 @@ new_totals['lovelace'] -= total_lovelace_out
 prior_tokens = new_totals.map do |token, amount|
   "+\"#{amount} #{token}\""
 end
-prior_tokens.delete('lovelace')
-return_tx_out = "--tx-out #{options[:return_address]} #{new_totals['lovelace']}" + prior_tokens.join('')
+prior_tokens.delete_if {|token| token.include? 'lovelace'}
+return_tx_out = "--tx-out #{options[:return_address]}+#{new_totals['lovelace']}" + prior_tokens.join('')
 
 mint_args = options[:tokens].map do |token|
   "\"1 #{token}\""
@@ -108,7 +108,7 @@ cardano-cli transaction build-raw \
   --out-file #{tmp_file}.raw
 """
 
-`#{build_raw_transaction_command}`
+`#{build_raw_transaction_command.strip}`
 
 calculate_min_fee_command = """
 cardano-cli transaction calculate-min-fee \
@@ -120,7 +120,7 @@ cardano-cli transaction calculate-min-fee \
   --protocol-params-file #{options[:protocol_file]}
 """
 
-fee = `#{calculate_min_fee_command}`.strip
+fee = `#{calculate_min_fee_command.strip}`.strip
 
 build_raw_transaction_with_fees_command = """
 cardano-cli transaction build-raw \
@@ -135,7 +135,7 @@ cardano-cli transaction build-raw \
   --out-file #{tmp_file}.raw
 """
 
-`#{build_raw_transaction_with_fees_command}`
+`#{build_raw_transaction_with_fees_command.strip}`
 
 sign_raw_transaction_command = """
 cardano-cli transaction sign \
@@ -147,6 +147,6 @@ cardano-cli transaction sign \
   --out-file #{tmp_file}.signed
 """
 
-`#{sign_raw_transaction_command}`
+`#{sign_raw_transaction_command.strip}`
 
 `cardano-cli transaction submit --tx-file #{tmp_file}.signed --#{network}`
