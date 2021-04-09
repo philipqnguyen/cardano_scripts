@@ -34,17 +34,20 @@ OptionParser.new do |parser|
     options[:protocol_file] = file
   end
   parser.on("-n", "--network [NETWORK]", "Such as mainnet or testnet") do |network|
-    options[:network] = network || 'mainnet'
+    options[:network] = network
   end
   parser.on("-m", "--magic [MAGICNUMBER]", "Defaults to 1097911063") do |magic|
-    options[:magic] = magic || '1097911063'
+    options[:magic] = magic
   end
   parser.on("-e", "--era [ERA]", "Era to query") do |era|
-    options[:era] = era || 'mary-era'
+    options[:era] = era
   end
 end.parse!
 
 options[:return_address] ||= options[:address]
+options[:network] ||= 'mainnet'
+options[:magic] ||= '1097911063'
+options[:era] ||= 'mary-era'
 
 network = if options[:network] == 'testnet'
   "testnet-magic #{options[:magic]}"
@@ -56,7 +59,8 @@ before_slot = JSON.parse(File.read(options[:policy]))['scripts'].find {|hash| ha
 
 utxos_table = `cardano-cli query utxo --address #{options[:address]} --#{network} --#{options[:era]}`
 
-totals = JSON.parse(`../balances/sum_address.rb -a #{options[:address]} -n #{network} -e #{options[:era]}`)
+sum_address_command = File.expand_path('../balances/sum_address.rb', File.dirname(__FILE__))
+totals = JSON.parse(`sum_address_command -a #{options[:address]} -n #{network} -e #{options[:era]}`)
 total_lovelace_out = 0
 tmp_file = "transaction_#{Time.now.to_i}"
 
