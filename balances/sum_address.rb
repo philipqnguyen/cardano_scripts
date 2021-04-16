@@ -30,7 +30,7 @@ else
   'mainnet'
 end
 
-utxos = `cardano-cli query utxo --address #{options[:address]} --#{network} --#{options[:era]}`
+utxos = `cardano-cli query utxo --address #{options[:address]} --#{network}`
 
 totals = {}
 

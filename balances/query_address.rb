@@ -29,4 +29,4 @@ else
   'mainnet'
 end
 
-puts `cardano-cli query utxo --address #{options[:address]} --#{network} --#{options[:era]}`
+puts `cardano-cli query utxo --address #{options[:address]} --#{network}}`
